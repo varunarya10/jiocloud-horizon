@@ -534,3 +534,4 @@ LOGIN_REDIRECT_URL = '<%= scope.lookupvar("horizon::params::root_url") %>'
 # offline compression by default.  To enable online compression, install
 # the python-lesscpy package and disable the following option.
 COMPRESS_OFFLINE = <%= @compress_offline.to_s.capitalize %>
+HORIZON_CONFIG['customization_module'] = 'contrail_openstack_dashboard.overrides'
