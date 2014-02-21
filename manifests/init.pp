@@ -122,7 +122,7 @@ class horizon(
   $secret_key,
   $fqdn                    = $::fqdn,
   $package_ensure          = 'present',
-  $cache_server_ip         = '127.0.0.1',
+  $cache_server_ip         = undef,
   $cache_server_port       = '11211',
   $swift                   = false,
   $horizon_app_links       = false,
@@ -136,7 +136,7 @@ class horizon(
   $can_set_mount_point     = 'True',
   $help_url                = 'http://docs.openstack.org',
   $local_settings_template = 'horizon/local_settings.py.erb',
-  $configure_apache        = true,
+  $configure_apache        = false,  ##FIXME: WORKROUND FOR ssl, it is true
   $bind_address            = '0.0.0.0',
   $listen_ssl              = false,
   $horizon_cert            = undef,
