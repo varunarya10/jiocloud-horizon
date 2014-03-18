@@ -30,6 +30,7 @@ class horizon::wsgi::apache (
   include ::horizon::params
   include ::apache
   include ::apache::mod::wsgi
+  include ::apache::mod::access_compat
 
 ### Required for apache 2.4
 #  include ::apache::mod::authn_core
