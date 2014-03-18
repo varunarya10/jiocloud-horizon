@@ -31,6 +31,10 @@ class horizon::wsgi::apache (
   include ::apache
   include ::apache::mod::wsgi
 
+### Required for apache 2.4
+  include ::apache::mod::authn_core
+  include ::apache::mod::authz_core
+
   file { $::horizon::params::httpd_config_file: }
 
   Package['horizon'] -> Package[$::horizon::params::http_service]
