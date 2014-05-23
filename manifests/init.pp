@@ -121,7 +121,7 @@
 class horizon(
   $secret_key,
   $fqdn                    = $::fqdn,
-  $package_ensure          = 'present',
+  $package_ensure          = 'latest',
   $cache_server_ip         = undef,
   $cache_server_port       = '11211',
   $swift                   = false,
@@ -147,6 +147,7 @@ class horizon(
   $keystone_host           = undef,
   $keystone_port           = undef,
   $keystone_scheme         = undef,
+  $regservice_url          = undef,
 ) {
 
   include ::horizon::params
@@ -169,15 +170,17 @@ class horizon(
 
   Service <| title == 'memcached' |> -> Class['horizon']
 
-  package { 'horizon':
+  package { $::horizon::params::package_name:
     ensure  => $package_ensure,
-    name    => $::horizon::params::package_name,
+    #name    => $::horizon::params::package_name,
   }
+
+
 
   file { $::horizon::params::config_file:
     content => template($local_settings_template),
     mode    => '0644',
-    require => Package['horizon'],
+#    require => Package['horizon'],
   }
 
   if $configure_apache {
