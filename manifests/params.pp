@@ -29,7 +29,7 @@ class horizon::params {
             $apache_group          = 'www-data'
         }
         default: {
-            $package_name          = ['openstack-dashboard','python-django-openstack','python-django-horizon']
+            $package_name          = 'openstack-dashboard'
             $apache_user           = 'horizon'
             $apache_group          = 'horizon'
         }

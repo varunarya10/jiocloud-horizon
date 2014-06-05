@@ -121,7 +121,7 @@
 class horizon(
   $secret_key,
   $fqdn                    = $::fqdn,
-  $package_ensure          = 'latest',
+  $package_ensure          = 'present',
   $cache_server_ip         = undef,
   $cache_server_port       = '11211',
   $swift                   = false,
