@@ -142,12 +142,26 @@ class horizon(
   $horizon_cert            = undef,
   $horizon_key             = undef,
   $horizon_ca              = undef,
-  $compress_offline        = 'True',
+  $compress_offline        = 'False',
+  $compress_enabled        = 'False',
   # DEPRECATED PARAMETERS
   $keystone_host           = undef,
   $keystone_port           = undef,
   $keystone_scheme         = undef,
   $regservice_url          = undef,
+  $recaptcha_public_key    = undef,
+  $recaptcha_private_key   = undef,
+  $recaptcha_use_ssl       = 'True',
+  $recaptcha_proxy          = undef,
+  $sms_system_hostname	= undef,
+  $sms_system_port 	= 2775,
+  $sms_system_id	= undef,
+  $sms_system_password	= undef,
+  $sms_source_addr	= undef,
+  $sms_system_sms_timeout = 300,
+  $site_branding = 'JioCloud',
+  $horizon_allowed_hosts = '*',
+  $theme_app = undef, 
 ) {
 
   include ::horizon::params

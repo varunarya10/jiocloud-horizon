@@ -6,19 +6,12 @@ from openstack_dashboard import exceptions
 
 DEBUG = <%= @django_debug.to_s.capitalize %>
 TEMPLATE_DEBUG = DEBUG
-TEMPLATE_DIRS = ('/usr/share/openstack-dashboard/horizon_jiocloud/templates', )
 # Required for Django 1.5.
 # If horizon is running in production (DEBUG is False), set this
 # with the list of host/domain names that the application can serve.
 # For more information see:
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 #ALLOWED_HOSTS = ['horizon.example.com', ]
-<% if @fqdn.kind_of?(Array) %>
-ALLOWED_HOSTS = ['<%= @fqdn.join("', '") %>', ]
-<% else %>
-ALLOWED_HOSTS = ['<%= @fqdn %>', ]
-<% end %>
-
 # Set SSL proxy settings:
 # For Django 1.4+ pass this header from the proxy after terminating the SSL,
 # and don't forget to strip it from the client's request.
@@ -70,6 +63,11 @@ HORIZON_CONFIG = {
 }
 
 # Specify a regular expression to validate user passwords.
+HORIZON_CONFIG["password_validator"] = {
+    "regex": '^.{6,}$',
+    "help_text": _("Your password must contain at least 6 characters.")
+}
+
 # HORIZON_CONFIG["password_validator"] = {
 #     "regex": '.*',
 #     "help_text": _("Your password does not meet the requirements.")
@@ -119,8 +117,29 @@ CACHES = {
     }
 }
 
+# Enable the Ubuntu theme if it is present.
+try:
+    from ubuntu_theme import *
+except ImportError:
+    pass
+
+# Default Ubuntu apache configuration uses /horizon as the application root.
+# Configure auth redirects here accordingly.
+LOGIN_URL='/horizon/auth/login/'
+LOGIN_REDIRECT_URL='/horizon/project/'
+
+# The Ubuntu package includes pre-compressed JS and compiled CSS to allow
+# offline compression by default.  To enable online compression, install
+# the node-less package and enable the following option.
+#COMPRESS_OFFLINE = True
+
+# By default, validation of the HTTP Host header is disabled.  Production
+# installations should have this set accordingly.  For more information
+# see https://docs.djangoproject.com/en/dev/ref/settings/.
+ALLOWED_HOSTS = ['<%= @horizon_allowed_hosts %>']
+
 # Send email to the console by default
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Or send them to /dev/null
 #EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
@@ -136,6 +155,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #     ('http://cluster2.example.com:5000/v2.0', 'cluster2'),
 # ]
 
+
 <%
 if (!@keystone_scheme.nil?) || (!@keystone_host.nil?) || (!@keystone_port.nil?)
     @keystone_scheme ||= "http"
@@ -144,6 +164,7 @@ if (!@keystone_scheme.nil?) || (!@keystone_host.nil?) || (!@keystone_port.nil?)
     @keystone_url = "#{@keystone_scheme}://#{@keystone_host}:#{@keystone_port}/v2.0"
 end
 -%>
+OPENSTACK_HOST = "<%= @fqdn %>"
 OPENSTACK_KEYSTONE_URL = "<%= @keystone_url %>"
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "<%= @keystone_default_role %>"
 
@@ -530,8 +551,45 @@ LOGIN_URL = '<%= scope.lookupvar("horizon::params::root_url") %>/auth/login/'
 LOGOUT_URL = '<%= scope.lookupvar("horizon::params::root_url") %>/auth/logout/'
 LOGIN_REDIRECT_URL = '<%= scope.lookupvar("horizon::params::root_url") %>'
 
+EMAIL_HOST = "localhost"
+EMAIL_PORT = 25
+EMAIL_HOST_USER = "xxxxx"
+EMAIL_HOST_PASSWORD = "xxxxx"
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+
+RECAPTCHA_PUBLIC_KEY = '<%= @recaptcha_public_key %>'
+RECAPTCHA_PRIVATE_KEY = '<%= @recaptcha_private_key %>'
+RECAPTCHA_USE_SSL = '<%= @recaptcha_use_ssl %>'
+RECAPTCHA_PROXY = '<%= @recaptcha_proxy %>'
+
+SMS_SYSTEM_HOSTNAME = '<%= @sms_system_hostname %>'
+SMS_SYSTEM_PORT = <%= @sms_system_port %>
+SMS_SYSTEM_ID = '<%= @sms_system_id %>'
+SMS_SYSTEM_PASSWORD = '<%= @sms_system_password %>'
+SMS_SYSTEM_SOURCE_ADDR = '<%= @sms_source_addr %>'
+SMS_SYSTEM_SMS_TIMEOUT = <%= @sms_system_sms_timeout %>
+SMS_SYSTEM_MSG = "Kindly enter following code on your screen to complete the registration - "
+
+REGISTRATION_SERVICE_ENDPOINT = '<%= @regservice_url %>'
+
+SITE_BRANDING = "JioCloud"
+<%- unless @theme_app.empty? %>
+THEME_APP = '<%= @theme_app %>'
+<%- end %>
+FORM_APPS = ('captcha',)
+try:
+    from openstack_dashboard.settings import INSTALLED_APPS
+    INSTALLED_APPS = (THEME_APP,) +  FORM_APPS + INSTALLED_APPS
+except:
+    pass
+
+SITE_URL = "<%= @fqdn %>"
+
+
 # The Ubuntu package includes pre-compressed JS and compiled CSS to allow
 # offline compression by default.  To enable online compression, install
 # the python-lesscpy package and disable the following option.
+COMPRESS_ENABLED = <%=@compress_enabled.to_s.capitalize %>
 COMPRESS_OFFLINE = <%= @compress_offline.to_s.capitalize %>
 HORIZON_CONFIG['customization_module'] = 'contrail_openstack_dashboard.overrides'
